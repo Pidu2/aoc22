@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("input_test")
+	file, err := os.Open("input")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +37,6 @@ func main() {
 				}
 			}
 		} else {
-			fmt.Println(line)
 			nbr, from, to := getOperators(line)
 			move(stackz, nbr, from, to)
 		}
@@ -61,7 +60,10 @@ func getOperators(input string) (int, int, int) {
 }
 
 func move(stackz map[int][]string, nbr int, from int, to int) {
-	move := stackz[from-1][0:nbr]
+	var tomove []string
+	for i := 0; i < nbr; i++ {
+		tomove = append(tomove, stackz[from-1][i])
+	}
 	stackz[from-1] = stackz[from-1][nbr:]
-	stackz[to-1] = append(move, stackz[to-1]...)
+	stackz[to-1] = append(tomove, stackz[to-1]...)
 }
