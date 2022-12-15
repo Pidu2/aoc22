@@ -25,20 +25,6 @@ func (n Node) show() {
 }
 
 func main() {
-	/*
-			for line in lines:
-			  if line startswith $ cd <$name>
-			    currentnode = children[<$name>]
-			  if line startswith $ cd <..>:
-			    currentnode = currentnode.parent
-		      if line startswith $ ls: skip
-			  aues andere in ls:
-			  	if startswith number:
-				  currentnode.files[<filename>] = size
-				if startswith dir:
-				  currentnode.children.append(node(parent=current, children=nil, name="$name", files=nil)
-			recursively loop through nodes and return their size
-	*/
 
 	file, err := os.Open("input_test")
 	if err != nil {
