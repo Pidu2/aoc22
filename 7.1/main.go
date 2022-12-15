@@ -53,24 +53,25 @@ func main() {
 		line := scanner.Text()
 		currentNode.show()
 		fmt.Println(line)
+		// if root cd -> create initial node
 		if line == "$ cd /" {
 			currentNode.name = "/"
 			currentNode.files = make(map[string]int)
 			currentNode.children = make(map[string]*Node)
-		} else if line == "$ cd .." {
+		} else if line == "$ cd .." { // if cd upwards -> switch to parent node
 			currentNode = *currentNode.parent
-		} else if strings.HasPrefix(line, "$ cd") {
+		} else if strings.HasPrefix(line, "$ cd") { // if cd downwards -> switch to children node
 			currentNode = *currentNode.children[strings.Split(line, " ")[2]]
-		} else if strings.HasPrefix(line, "$ ls") {
+		} else if strings.HasPrefix(line, "$ ls") { // if ls -> do nothing
 			continue
-		} else if strings.HasPrefix(line, "dir") {
+		} else if strings.HasPrefix(line, "dir") { // inside ls dir list -> create children node
 			currentNode.children[strings.Split(line, " ")[1]] = &Node{
 				parent:   &currentNode,
 				name:     strings.Split(line, " ")[1],
 				files:    make(map[string]int),
 				children: make(map[string]*Node),
 			}
-		} else {
+		} else { // inside ls file list -> create file entry with size
 			split := strings.Split(line, " ")
 			name := split[1]
 			size, _ := strconv.Atoi(split[0])
