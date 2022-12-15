@@ -24,6 +24,18 @@ func (n Node) show() {
 	fmt.Println("#############")
 }
 
+func (n Node) printSizes() int {
+	size := 0
+	for _, fsize := range n.files {
+		size += fsize
+	}
+	for _, el := range n.children {
+		size += el.printSizes()
+	}
+	fmt.Printf("%s: %d\n", n.name, size)
+	return size
+}
+
 func main() {
 
 	file, err := os.Open("input_test")
@@ -33,26 +45,27 @@ func main() {
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 
-	var currentNode Node
+	var rootNode Node
+	rootNode.name = "/"
+	rootNode.files = make(map[string]int)
+	rootNode.children = make(map[string]*Node)
+
+	currentNode := &rootNode
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		currentNode.show()
-		fmt.Println(line)
-		// if root cd -> create initial node
+		// if root cd -> continue as this is already created
 		if line == "$ cd /" {
-			currentNode.name = "/"
-			currentNode.files = make(map[string]int)
-			currentNode.children = make(map[string]*Node)
+			continue
 		} else if line == "$ cd .." { // if cd upwards -> switch to parent node
-			currentNode = *currentNode.parent
+			currentNode = currentNode.parent
 		} else if strings.HasPrefix(line, "$ cd") { // if cd downwards -> switch to children node
-			currentNode = *currentNode.children[strings.Split(line, " ")[2]]
+			currentNode = currentNode.children[strings.Split(line, " ")[2]]
 		} else if strings.HasPrefix(line, "$ ls") { // if ls -> do nothing
 			continue
 		} else if strings.HasPrefix(line, "dir") { // inside ls dir list -> create children node
 			currentNode.children[strings.Split(line, " ")[1]] = &Node{
-				parent:   &currentNode,
+				parent:   currentNode,
 				name:     strings.Split(line, " ")[1],
 				files:    make(map[string]int),
 				children: make(map[string]*Node),
@@ -64,4 +77,6 @@ func main() {
 			currentNode.files[name] = size
 		}
 	}
+
+	rootNode.printSizes()
 }
