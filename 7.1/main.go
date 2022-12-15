@@ -24,21 +24,25 @@ func (n Node) show() {
 	fmt.Println("#############")
 }
 
-func (n Node) printSizes() int {
+var foldersizes []int
+
+func (n Node) calcSizes(f func(int) bool) int {
 	size := 0
 	for _, fsize := range n.files {
 		size += fsize
 	}
 	for _, el := range n.children {
-		size += el.printSizes()
+		size += el.calcSizes(f)
 	}
-	fmt.Printf("%s: %d\n", n.name, size)
+	if f(size) {
+		foldersizes = append(foldersizes, size)
+	}
 	return size
 }
 
 func main() {
 
-	file, err := os.Open("input_test")
+	file, err := os.Open("input")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,5 +82,14 @@ func main() {
 		}
 	}
 
-	rootNode.printSizes()
+	var smallerThan = func(s int) bool {
+		return s < 100000
+	}
+
+	rootNode.calcSizes(smallerThan)
+	result := 0
+	for _, size := range foldersizes {
+		result += size
+	}
+	fmt.Println(result)
 }
